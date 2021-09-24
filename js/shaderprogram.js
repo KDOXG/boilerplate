@@ -1,13 +1,16 @@
-var vertexShaderSource = `#version 300 es
+var vertexShaderSource = 
+`#version 300 es
 
 in vec3 a_position;
 
 void main()
 {
     gl_Position = vec4(a_position,1.0);
-}`;
+}`
+;
 
-var fragmentShaderSource = `#version 300 es
+var fragmentShaderSource = 
+`#version 300 es
 
 precision highp float;
 out vec4 outColor;
@@ -16,7 +19,8 @@ uniform vec4 u_color;
 void main()
 {
     outColor = u_color;
-}`;
+}`
+;
 
 function initCanvas()
 {
