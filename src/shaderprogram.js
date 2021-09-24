@@ -4,14 +4,14 @@ in vec3 a_position;
 
 void main()
 {
-    gl_Position = a_position;
+    gl_Position = vec4(a_position,1.0);
 }`;
 
 var fragmentShaderSource = `#version 300 es
 
 precision highp float;
-out vec3 outColor;
-uniform vec3 u_color;
+out vec4 outColor;
+uniform vec4 u_color;
 
 void main()
 {
