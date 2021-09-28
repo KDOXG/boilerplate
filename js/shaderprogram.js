@@ -1,4 +1,4 @@
-var vertexShaderSource = 
+const vertexShaderSource = 
 `#version 300 es
 
 in vec4 a_position;
@@ -15,7 +15,7 @@ void main()
 }`
 ;
 
-var fragmentShaderSource = 
+const fragmentShaderSource = 
 `#version 300 es
 
 precision highp float;
@@ -32,74 +32,74 @@ void main()
 }`
 ;
 
-function initCanvas()
+class shaderProgram
 {
-    var canvas = document.querySelector("#canvas");
-    var gl = canvas.getContext("webgl2");
-    if (!gl)
+    constructor()
     {
-        console.log("Erro canvas");
-        return;
-    }
-    return gl;
-}
-
-function setupProgram(gl)
-{
-    var program = gl.createProgram();
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-
-    gl.shaderSource(vertexShader, vertexShaderSource);
-    gl.shaderSource(fragmentShader, fragmentShaderSource);
-
-    gl.compileShader(vertexShader);
-    gl.compileShader(fragmentShader);
-
-    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS))
-    {
-      console.log('erro vertex shader');
-      console.log(gl.getShaderInfoLog(vertexShader));
+        this.canvas = document.querySelector("#canvas");
+        this.gl = canvas.getContext("webgl2");
+        if (!this.gl)
+        {
+            console.log("Erro canvas");
+        }
+        this.program = this.gl.createProgram();
     }
 
-    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS))
+    setupProgram()
     {
-      console.log('erro fragment shader');
-      console.log(gl.getShaderInfoLog(fragmentShader));
+        var vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+        var fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+
+        this.gl.shaderSource(vertexShader, vertexShaderSource);
+        this.gl.shaderSource(fragmentShader, fragmentShaderSource);
+
+        this.gl.compileShader(vertexShader);
+        this.gl.compileShader(fragmentShader);
+
+        if (!this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS))
+        {
+        console.log('erro vertex shader');
+        console.log(this.gl.getShaderInfoLog(vertexShader));
+        }
+
+        if (!this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS))
+        {
+        console.log('erro fragment shader');
+        console.log(this.gl.getShaderInfoLog(fragmentShader));
+        }
+
+        this.gl.attachShader(this.program, vertexShader);
+        this.gl.attachShader(this.program, fragmentShader);
+
+        this.gl.linkProgram(this.program);
+        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS))
+        {
+            console.log('erro linkProgram');
+            console.log(this.gl.getProgramInfoLog(this.program));
+        }
+        this.gl.useProgram(this.program);
     }
 
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    getLocations()
     {
-        console.log('erro linkProgram');
-        console.log(gl.getProgramInfoLog(program));
+        const positionLocation = this.gl.getAttribLocation(this.program, "a_position");
+        const colorLocation = this.gl.getUniformLocation(this.program, "u_color");
+
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 3, this.gl.FLOAT, false, 0, 0);
+
+        return colorLocation;
     }
 
-    return program;
-}
-
-function getLocations(gl, program)
-{
-    var positionLocation = gl.getAttribLocation(program, "a_position");
-    var colorLocation = gl.getUniformLocation(program, "u_color");
-
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-
-    return 
+    setBuffer()
     {
-        positionLocation,
-        colorLocation
-    };
-}
+        var buffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+    }
 
-function setBuffer(gl)
-{
-    var buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    
-    return buffer;
+    clearColor()
+    {
+        this.gl.clearColor(1, 1, 1, 1);
+        this.gl.clear(this.gl.COLLOR_BUFFER_BIT);
+    }
 }

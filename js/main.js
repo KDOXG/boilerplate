@@ -1,19 +1,22 @@
 function main()
 {
-    var gl = initCanvas();
-    var program = setupProgram(gl);
-    gl.useProgram(program);
+    var SP = new shaderProgram();
+    SP.setupProgram();
 
-    var {positionLocation, colorLocation} = getLocations(gl, program);
+    const colorLocation = SP.getLocations();
     
-    var buffer = setBuffer(gl);
+    SP.setBuffer();
 
-    gl.clearColor(1, 1, 1, 1);
-    gl.clear(gl.COLLOR_BUFFER_BIT);
+    SP.clearColor();
+
+    loadGUI();
 
     //Main render loop
-    while(true)
+    function render()
     {
-
+        requestAnimationFrame(render);
     }
+    requestAnimationFrame(render);
 }
+
+main();
