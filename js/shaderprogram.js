@@ -1,11 +1,17 @@
 var vertexShaderSource = 
 `#version 300 es
 
-in vec3 a_position;
+in vec4 a_position;
+in vec4 a_color;
+
+uniform mat4 u_matrix;
+
+out vec4 v_color;
 
 void main()
 {
-    gl_Position = vec4(a_position,1.0);
+    gl_Position = u_matrix * a_position;
+    v_color = a_color;
 }`
 ;
 
@@ -13,12 +19,16 @@ var fragmentShaderSource =
 `#version 300 es
 
 precision highp float;
-out vec4 outColor;
+
+in vec4 v_color;
+
 uniform vec4 u_color;
+
+out vec4 outColor;
 
 void main()
 {
-    outColor = u_color;
+    outColor = v_color * u_color;
 }`
 ;
 
@@ -69,4 +79,27 @@ function setupProgram(gl)
     }
 
     return program;
+}
+
+function getLocations(gl, program)
+{
+    var positionLocation = gl.getAttribLocation(program, "a_position");
+    var colorLocation = gl.getUniformLocation(program, "u_color");
+
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+
+    return 
+    {
+        positionLocation,
+        colorLocation
+    };
+}
+
+function setBuffer(gl)
+{
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    
+    return buffer;
 }
