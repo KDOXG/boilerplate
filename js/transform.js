@@ -10,6 +10,7 @@ class Transform
         this.y = 0;
         this.translate = null;
         this.rotate = null;
+        this.scale = null;
     }
 
     loadMesh(object, dim = 3)
@@ -18,10 +19,11 @@ class Transform
         this.dim = dim;
     }
 
-    configMesh(translate, rotate)
+    configMesh(translate, rotate, scale)
     {
         this.translate = translate;
         this.rotate = rotate;
+        this.scale = scale;
     }
 
     translate(values)

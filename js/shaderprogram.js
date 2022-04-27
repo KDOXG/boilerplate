@@ -8,9 +8,13 @@ uniform vec2 u_translation;
 
 uniform vec2 u_rotation;
 
+uniform vec2 u_scale;
+
 void main() {
 
-    vec2 rotatedPosition = vec2(a_position.x * u_rotation.y + a_position.y * u_rotation.x, a_position.y * u_rotation.y - a_position.x * u_rotation.x);
+    vec2 scaledPosition = a_position * u_scale;
+
+    vec2 rotatedPosition = vec2(scaledPosition.x * u_rotation.y + scaledPosition.y * u_rotation.x, scaledPosition.y * u_rotation.y - scaledPosition.x * u_rotation.x);
 
     vec2 position = rotatedPosition + u_translation;
   
@@ -58,6 +62,7 @@ class ShaderProgram
         this.resolutionLocation = null;
         this.translationLocation = null;
         this.rotationLocation = null;
+        this.scaleLocation = null;
     }
 
     setupProgram()
@@ -108,6 +113,7 @@ class ShaderProgram
         this.resolutionLocation = this.gl.getUniformLocation(this.program, "u_resolution");
         this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
         this.rotationLocation = this.gl.getUniformLocation(this.program, "u_rotation");
+        this.scaleLocation = this.gl.getUniformLocation(this.program, "u_scale");
     }
 
     setBuffer()
@@ -177,6 +183,7 @@ class ShaderProgram
     {
         this.gl.uniform2f(this.translationLocation, object.translate[0], object.translate[1]);
         this.gl.uniform2f(this.rotationLocation, object.rotate[0], object.rotate[1]);
+        this.gl.uniform2f(this.scaleLocation, object.scale[0], object.scale[1]);
         this.putBuffer(object.object);
         this.putColor(color);
         this.primitiveDraw(0, object.object.length / object.dim);
