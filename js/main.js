@@ -23,7 +23,6 @@ function main()
     //Main render loop
     function render()
     {
-        //debugger;
         SP.draw(transform2D.translate(positions, [config.move_x, config.move_y]), COLOR_RED);
         
         SP.draw(positions, COLOR_GREEN, [config.move_x, config.move_y+20]);
