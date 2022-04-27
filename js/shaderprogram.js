@@ -1,48 +1,16 @@
-/*
-const vertexShaderSource = 
-`#version 300 es
-
-in vec4 a_position;
-in vec4 a_color;
-
-uniform mat4 u_matrix;
-
-out vec4 v_color;
-
-void main()
-{
-    gl_Position = u_matrix * a_position;
-    v_color = a_color;
-}`
-;
-
-const fragmentShaderSource = 
-`#version 300 es
-
-precision highp float;
-
-in vec4 v_color;
-
-uniform vec4 u_color;
-
-out vec4 outColor;
-
-void main()
-{
-    outColor = v_color * u_color;
-}`
-;
-*/
-
 var vertexShaderSource = `#version 300 es
 
 in vec2 a_position;
 
 uniform vec2 u_resolution;
 
+uniform vec2 u_translation;
+
 void main() {
+
+    vec2 position = a_position + u_translation;
   
-    vec2 zeroToOne = a_position / u_resolution;
+    vec2 zeroToOne = position / u_resolution;
 
     vec2 zeroToTwo = zeroToOne * 2.0;
 
@@ -66,7 +34,7 @@ void main() {
 }
 `;
 
-class shaderProgram
+class ShaderProgram
 {
     constructor()
     {
@@ -78,17 +46,19 @@ class shaderProgram
         }
         webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
         this.program = this.gl.createProgram();
+        this.vao = null;
+
+        //Locations
         this.positionLocation = null;
         this.colorLocation = null;
         this.resolutionLocation = null;
-        this.colorLocation = null;
-        this.vao = null;
+        this.translationLocation = null;
     }
 
     setupProgram()
     {
-        var vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
-        var fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+        const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 
         this.gl.shaderSource(vertexShader, vertexShaderSource);
         this.gl.shaderSource(fragmentShader, fragmentShaderSource);
@@ -131,11 +101,12 @@ class shaderProgram
         this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
         this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
         this.resolutionLocation = this.gl.getUniformLocation(this.program, "u_resolution");
+        this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
     }
 
     setBuffer()
     {
-        var buffer = this.gl.createBuffer();
+        const buffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     }
 
@@ -171,10 +142,10 @@ class shaderProgram
 
     runVAO(size = 2)
     {
-        var normalize = false;
-        var stride = 0;
-        var offset = 0;
-        var type = this.gl.FLOAT;
+        const normalize = false;
+        const stride = 0;
+        const offset = 0;
+        const type = this.gl.FLOAT;
         this.gl.vertexAttribPointer(this.positionLocation, size, type, normalize, stride, offset);
     }
 
@@ -192,7 +163,15 @@ class shaderProgram
 
     primitiveDraw(offset = 0, count = 3)
     {
-        var primitive = this.gl.TRIANGLES;
+        const primitive = this.gl.TRIANGLES;
         this.gl.drawArrays(primitive, offset, count);
+    }
+
+    draw(object, color, translate = [0, 0], dim = 2)
+    {
+        this.gl.uniform2f(this.translationLocation, translate[0], translate[1]);
+        this.putBuffer(object);
+        this.putColor(color);
+        this.primitiveDraw(0, object.length / dim);
     }
 }
