@@ -3,8 +3,7 @@
 function main()
 {
     var SP = new ShaderProgram();
-    var transform2D = new Transform(2);
-    var params = [1, 0, 0];
+    var transform2D = new Transform();
 
     SP.setupProgram();
     SP.getLocations();
@@ -21,19 +20,48 @@ function main()
     loadGUI();
 
     //Main render loop
+    
     function render()
     {
-        SP.draw(transform2D.translate(positions, [config.move_x, config.move_y]), COLOR_RED);
-        
-        SP.draw(positions, COLOR_GREEN, [config.move_x, config.move_y+20]);
+        //debugger;
+        transform2D.loadMesh(positions, 2);
+        transform2D.translate([config.move_x, config.move_y]);
+        transform2D.rotate([Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
+        SP.draw(transform2D.object, COLOR_RED);
 
-        SP.draw(transform2D.translate(pixel_downTriangle, [config.move_x + 10, config.move_y]), COLOR_GREEN);
+        /*
+        transform2D.loadMesh(positions, 2);
+        transform2D.translate([config.move_x, config.move_y+20]);
+        transform2D.rotate([Math.sin(config.rotate_h), Math.cos(config.rotate_h)]);
+        SP.draw(transform2D.object, COLOR_GREEN);
+        */
+        SP.draw(positions, COLOR_GREEN, 2, [config.move_x, config.move_y+20], [Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
 
-        SP.draw(pixel_downTriangle, COLOR_BLUE, [config.move_x + 10, config.move_y + 30]);
+        transform2D.loadMesh(pixel_downTriangle, 2);
+        transform2D.translate([config.move_x + 10, config.move_y]);
+        transform2D.rotate([Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
+        SP.draw(transform2D.object, COLOR_GREEN);
 
-        SP.draw(transform2D.translate(pixel_upTriangle, [config.move_x + 100, config.move_y]), COLOR_BLUE);
+        /*
+        transform2D.loadMesh(pixel_downTriangle, 2);
+        transform2D.translate([config.move_x + 10, config.move_y + 30]);
+        transform2D.rotate([Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
+        SP.draw(transform2D.object, COLOR_BLUE);
+        */
+        SP.draw(pixel_downTriangle, COLOR_BLUE, 2, [config.move_x + 10, config.move_y + 30], [Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
 
-        SP.draw(pixel_upTriangle, COLOR_RED, [config.move_x + 100, config.move_y + 50]);
+        transform2D.loadMesh(pixel_upTriangle, 2);
+        transform2D.translate([config.move_x + 100, config.move_y]);
+        transform2D.rotate([Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
+        SP.draw(transform2D.object, COLOR_BLUE);
+
+        /*
+        transform2D.loadMesh(pixel_upTriangle, 2);
+        transform2D.translate([config.move_x + 100, config.move_y + 50]);
+        transform2D.rotate([Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
+        SP.draw(transform2D.object, COLOR_RED);
+        */
+        SP.draw(pixel_upTriangle, COLOR_RED, 2, [config.move_x + 100, config.move_y + 50], [Math.sin(degToRad(config.rotate_h)), Math.cos(degToRad(config.rotate_h))]);
 
         requestAnimationFrame(render);
     }

@@ -6,9 +6,13 @@ uniform vec2 u_resolution;
 
 uniform vec2 u_translation;
 
+uniform vec2 u_rotation;
+
 void main() {
 
-    vec2 position = a_position + u_translation;
+    vec2 rotatedPosition = vec2(a_position.x * u_rotation.y + a_position.y * u_rotation.x, a_position.y * u_rotation.y - a_position.x * u_rotation.x);
+
+    vec2 position = rotatedPosition + u_translation;
   
     vec2 zeroToOne = position / u_resolution;
 
@@ -53,6 +57,7 @@ class ShaderProgram
         this.colorLocation = null;
         this.resolutionLocation = null;
         this.translationLocation = null;
+        this.rotationLocation = null;
     }
 
     setupProgram()
@@ -102,6 +107,7 @@ class ShaderProgram
         this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
         this.resolutionLocation = this.gl.getUniformLocation(this.program, "u_resolution");
         this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
+        this.rotationLocation = this.gl.getUniformLocation(this.program, "u_rotation");
     }
 
     setBuffer()
@@ -167,9 +173,10 @@ class ShaderProgram
         this.gl.drawArrays(primitive, offset, count);
     }
 
-    draw(object, color, translate = [0, 0], dim = 2)
+    draw(object, color, dim = 2, translate = [0, 0], rotate = [0, 1])
     {
         this.gl.uniform2f(this.translationLocation, translate[0], translate[1]);
+        this.gl.uniform2f(this.rotationLocation, rotate[0], rotate[1]);
         this.putBuffer(object);
         this.putColor(color);
         this.primitiveDraw(0, object.length / dim);

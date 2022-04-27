@@ -1,29 +1,54 @@
+
+
 class Transform
 {
-    constructor(dim)
+    constructor()
     {
-        this.workingDim = dim;
+        this.dim = 3;
+        this.object = null;
+        this.x = 0;
+        this.y = 0;
     }
 
-    translate(object, values)
+    loadMesh(object, dim = 3)
     {
-        var newObject = object.slice();
+        this.object = object.slice();
+        this.dim = dim;
+    }
+
+    translate(values)
+    {
+        if (this.object == null) return;
         var it;
-        for (let i = 0; i < newObject.length / this.workingDim; i++)
+        for (let i = 0; i < this.object.length / this.dim; i++)
         {
-            it = i*this.workingDim;
-            for (let j = 0; j < this.workingDim; j++)
+            it = i*this.dim;
+            for (let j = 0; j < this.dim; j++)
             {
-                newObject[it+j] += values[j];
+                this.object[it+j] += values[j];
             }
         }
-        return newObject;
     }
 
-    rotate(object, values)
+    rotate(values)
     {
-        var newObject = object.slice();
+        if (this.object == null) return;
+        var it;
+        switch (this.dim)
+        {
+            case 2:
+                for (let i = 0; i < this.object.length / this.dim; i++)
+                {
+                    it = i * this.dim;
+                    this.object[it] = this.object[it] * values[1] + this.object[it+1] * values[0];
+                    this.object[it+1] = this.object[it+1] * values[1] - this.object[it] * values[0];
+                }
+            break;
+            case 3:
 
-        return newObject;
+            break;
+            default:
+                return;
+        }
     }
 }
