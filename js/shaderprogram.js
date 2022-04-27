@@ -173,12 +173,12 @@ class ShaderProgram
         this.gl.drawArrays(primitive, offset, count);
     }
 
-    draw(object, color, dim = 2, translate = [0, 0], rotate = [0, 1])
+    draw(object, color)
     {
-        this.gl.uniform2f(this.translationLocation, translate[0], translate[1]);
-        this.gl.uniform2f(this.rotationLocation, rotate[0], rotate[1]);
-        this.putBuffer(object);
+        this.gl.uniform2f(this.translationLocation, object.translate[0], object.translate[1]);
+        this.gl.uniform2f(this.rotationLocation, object.rotate[0], object.rotate[1]);
+        this.putBuffer(object.object);
         this.putColor(color);
-        this.primitiveDraw(0, object.length / dim);
+        this.primitiveDraw(0, object.object.length / object.dim);
     }
 }

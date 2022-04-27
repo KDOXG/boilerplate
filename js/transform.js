@@ -8,12 +8,20 @@ class Transform
         this.object = null;
         this.x = 0;
         this.y = 0;
+        this.translate = null;
+        this.rotate = null;
     }
 
     loadMesh(object, dim = 3)
     {
         this.object = object.slice();
         this.dim = dim;
+    }
+
+    configMesh(translate, rotate)
+    {
+        this.translate = translate;
+        this.rotate = rotate;
     }
 
     translate(values)
@@ -30,6 +38,9 @@ class Transform
         }
     }
 
+    /**
+     * Not working
+    */
     rotate(values)
     {
         if (this.object == null) return;
