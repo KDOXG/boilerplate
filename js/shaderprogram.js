@@ -2,29 +2,11 @@ var vertexShaderSource = `#version 300 es
 
 in vec2 a_position;
 
-uniform vec2 u_resolution;
-
-uniform vec2 u_translation;
-
-uniform vec2 u_rotation;
-
-uniform vec2 u_scale;
+uniform mat3 u_matrix;
 
 void main() {
 
-    vec2 scaledPosition = a_position * u_scale;
-
-    vec2 rotatedPosition = vec2(scaledPosition.x * u_rotation.y + scaledPosition.y * u_rotation.x, scaledPosition.y * u_rotation.y - scaledPosition.x * u_rotation.x);
-
-    vec2 position = rotatedPosition + u_translation;
-  
-    vec2 zeroToOne = position / u_resolution;
-
-    vec2 zeroToTwo = zeroToOne * 2.0;
-
-    vec2 clipSpace = zeroToTwo - 1.0;
-
-    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+    gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
 
 }
 `;
@@ -59,10 +41,10 @@ class ShaderProgram
         //Locations
         this.positionLocation = null;
         this.colorLocation = null;
-        this.resolutionLocation = null;
         this.translationLocation = null;
         this.rotationLocation = null;
         this.scaleLocation = null;
+        this.matrixLocation = null;
     }
 
     setupProgram()
@@ -102,7 +84,6 @@ class ShaderProgram
     runProgram()
     {
         this.gl.useProgram(this.program);
-        this.gl.uniform2f(this.resolutionLocation, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.bindVertexArray(this.vao);
     }
 
@@ -110,10 +91,12 @@ class ShaderProgram
     {
         this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
         this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
-        this.resolutionLocation = this.gl.getUniformLocation(this.program, "u_resolution");
-        this.translationLocation = this.gl.getUniformLocation(this.program, "u_translation");
-        this.rotationLocation = this.gl.getUniformLocation(this.program, "u_rotation");
-        this.scaleLocation = this.gl.getUniformLocation(this.program, "u_scale");
+        this.matrixLocation = this.gl.getUniformLocation(this.program, "u_matrix");
+    }
+
+    getCanvasSize()
+    {
+        return [this.gl.canvas.clientWidth, this.gl.canvas.clientHeight];
     }
 
     setBuffer()
@@ -179,11 +162,9 @@ class ShaderProgram
         this.gl.drawArrays(primitive, offset, count);
     }
 
-    draw(object, color)
+    draw(object, color, center = false)
     {
-        this.gl.uniform2f(this.translationLocation, object.translate[0], object.translate[1]);
-        this.gl.uniform2f(this.rotationLocation, object.rotate[0], object.rotate[1]);
-        this.gl.uniform2f(this.scaleLocation, object.scale[0], object.scale[1]);
+        this.gl.uniformMatrix3fv(this.matrixLocation, false, object.transformMatrix(center));
         this.putBuffer(object.object);
         this.putColor(color);
         this.primitiveDraw(0, object.object.length / object.dim);

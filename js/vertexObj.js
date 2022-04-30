@@ -18,16 +18,16 @@ var upTriangle =
 
 var pixel_downTriangle = 
 [
-    50, 50,
-    10, 10,
-    50, 10,
+    40, 40,
+    0, 0,
+    40, 0,
 ];
 
 var pixel_upTriangle =
 [
-    10, 50,
-    10, 10,
-    50, 50
+    0, 40,
+    0, 0,
+    40, 40
 ];
 
 var positions = [
