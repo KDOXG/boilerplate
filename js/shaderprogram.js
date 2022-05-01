@@ -94,6 +94,8 @@ class ShaderProgram
     {
         this.gl.useProgram(this.program);
         this.gl.bindVertexArray(this.vao);
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.CULL_FACE);
     }
 
     getLocations()
@@ -106,14 +108,6 @@ class ShaderProgram
     getCanvasSize()
     {
         return [this.gl.canvas.clientWidth, this.gl.canvas.clientHeight];
-    }
-
-    setBuffer()
-    {
-    }
-
-    setVAO()
-    {
     }
 
     setPosition(object, size = 3)
@@ -167,7 +161,7 @@ class ShaderProgram
     clearColor()
     {
         this.gl.clearColor(1, 1, 1, 1);
-        this.gl.clear(this.gl.COLLOR_BUFFER_BIT);
+        this.gl.clear(this.gl.COLLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
     primitiveDraw(offset = 0, count = 3)
