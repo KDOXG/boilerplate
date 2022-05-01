@@ -7,6 +7,7 @@ var MatrixTransform =
             -1, 1, 1,
         ];
     },
+    
     projection3: function (width, height, depth) {
         // Note: This matrix flips the Y axis so 0 is at the top.
         return [

@@ -1,12 +1,17 @@
 var vertexShaderSource = `#version 300 es
 
 in vec4 a_position;
+in vec4 a_color;
 
 uniform mat4 u_matrix;
+
+out vec4 v_color;
 
 void main() {
 
     gl_Position = u_matrix * a_position;
+
+    v_color = a_color;
 
 }
 `;
@@ -15,12 +20,12 @@ var fragmentShaderSource = `#version 300 es
 
 precision highp float;
 
-uniform vec4 u_color;
+in vec4 v_color;
 
 out vec4 outColor;
 
 void main() {
-    outColor = u_color;
+    outColor = v_color;
 }
 `;
 
@@ -37,6 +42,10 @@ class ShaderProgram
         webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
         this.program = this.gl.createProgram();
         this.vao = null;
+
+        //Buffers
+        this.positionBuffer = null;
+        this.colorBuffer = null;
 
         //Locations
         this.positionLocation = null;
@@ -90,7 +99,7 @@ class ShaderProgram
     getLocations()
     {
         this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
-        this.colorLocation = this.gl.getUniformLocation(this.program, "u_color");
+        this.colorLocation = this.gl.getAttribLocation(this.program, "a_color");
         this.matrixLocation = this.gl.getUniformLocation(this.program, "u_matrix");
     }
 
@@ -101,47 +110,52 @@ class ShaderProgram
 
     setBuffer()
     {
-        const buffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    }
-
-    putBuffer(vertexarrayData, drawmodeData = this.gl.STATIC_DRAW)
-    {
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexarrayData), drawmodeData);
-    }
-
-    putColor(color)
-    {
-        switch(color)
-        {
-            case COLOR_RED:
-                this.gl.uniform4f(this.colorLocation, 255, 0, 0, 1);
-            break;
-            case COLOR_GREEN:
-                this.gl.uniform4f(this.colorLocation, 0, 255, 0, 1);
-            break;
-            case COLOR_BLUE:
-                this.gl.uniform4f(this.colorLocation, 0, 0, 255, 1);
-            break;
-            default:
-                this.gl.uniform4f(this.colorLocation, 0, 0, 0, 1);
-        }
     }
 
     setVAO()
     {
+    }
+
+    setPosition(object, size = 3)
+    {
+        this.positionBuffer = this.gl.createBuffer();
         this.vao = this.gl.createVertexArray();
         this.gl.bindVertexArray(this.vao);
         this.gl.enableVertexAttribArray(this.positionLocation);
-    }
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
 
-    runVAO(size = 3)
-    {
+        this.putObject(object);
+
         const normalize = false;
         const stride = 0;
         const offset = 0;
         const type = this.gl.FLOAT;
         this.gl.vertexAttribPointer(this.positionLocation, size, type, normalize, stride, offset);
+    }
+
+    setColor(texture, size = 3)
+    {
+        this.colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
+        this.gl.enableVertexAttribArray(this.colorLocation);
+
+        this.putColor(texture);
+
+        const normalize = true;
+        const stride = 0;
+        const offset = 0;
+        const type = this.gl.UNSIGNED_BYTE;
+        this.gl.vertexAttribPointer(this.colorLocation, size, type, normalize, stride, offset);
+    }
+
+    putObject(vertexarrayData, drawmodeData = this.gl.STATIC_DRAW)
+    {
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexarrayData), drawmodeData);
+    }
+
+    putColor(color, drawmodeData = this.gl.STATIC_DRAW)
+    {
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Uint8Array(color), drawmodeData);
     }
 
     setScreen()
@@ -162,11 +176,11 @@ class ShaderProgram
         this.gl.drawArrays(primitive, offset, count);
     }
 
-    draw(object, color, center = false)
+    draw(object, center = false)
     {
         this.gl.uniformMatrix4fv(this.matrixLocation, false, object.transformMatrix(center));
-        this.putBuffer(object.object);
-        this.putColor(color);
+        this.setPosition(object.object);
+        this.setColor(object.texture);
         this.primitiveDraw(0, object.object.length / object.dim);
     }
 }

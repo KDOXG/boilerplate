@@ -9,12 +9,15 @@ class ObjectModel
         this.y = 0;
         this.z = 0;
         this.center = null;
+        //For transformation
         this.translate = null;
         this.rotatex = null;
         this.rotatey = null;
         this.rotatez = null;
         this.scale = null;
         this.projection = null;
+        //For texture
+        this.texture = null;
     }
 
     loadMesh(object, dim = 3)
@@ -22,6 +25,11 @@ class ObjectModel
         this.object = object.slice();
         this.dim = dim;
         this.center = this.objectCenter();
+    }
+
+    loadTexture(texture)
+    {
+        this.texture = texture.slice();
     }
 
     configMesh(translate, rotatex, rotatey, rotatez, scale, projection)
