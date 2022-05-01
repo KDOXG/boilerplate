@@ -1,12 +1,12 @@
 var vertexShaderSource = `#version 300 es
 
-in vec2 a_position;
+in vec4 a_position;
 
-uniform mat3 u_matrix;
+uniform mat4 u_matrix;
 
 void main() {
 
-    gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
+    gl_Position = u_matrix * a_position;
 
 }
 `;
@@ -135,7 +135,7 @@ class ShaderProgram
         this.gl.enableVertexAttribArray(this.positionLocation);
     }
 
-    runVAO(size = 2)
+    runVAO(size = 3)
     {
         const normalize = false;
         const stride = 0;
@@ -164,7 +164,7 @@ class ShaderProgram
 
     draw(object, color, center = false)
     {
-        this.gl.uniformMatrix3fv(this.matrixLocation, false, object.transformMatrix(center));
+        this.gl.uniformMatrix4fv(this.matrixLocation, false, object.transformMatrix(center));
         this.putBuffer(object.object);
         this.putColor(color);
         this.primitiveDraw(0, object.object.length / object.dim);

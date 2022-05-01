@@ -6,7 +6,9 @@ function main()
     var objectToLoad = new ObjectModel();
 
     var translate = null;
-    var rotate = null;
+    var rotatex = null;
+    var rotatey = null;
+    var rotatez = null;
     var scale = null;
     var projection = null;
 
@@ -29,42 +31,16 @@ function main()
     function render()
     {
         //debugger;
-        projection = MatrixTransform.projection(SP.getCanvasSize()[0], SP.getCanvasSize()[1]);
+        projection = MatrixTransform.projection3(SP.getCanvasSize()[0], SP.getCanvasSize()[1], 400);
 
-        objectToLoad.loadMesh(positions, 2);
-        translate = MatrixTransform.translation(config.move_x, config.move_y);
-        rotate = MatrixTransform.rotation(degToRad(config.rotate_h));
-        scale = MatrixTransform.scaling(config.scale_x, config.scale_y);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
+        objectToLoad.loadMesh(LetterF);
+        translate = MatrixTransform.translation(config.move_x, config.move_y, config.move_z);
+        rotatex = MatrixTransform.xRotation(degToRad(config.rotate_x));
+        rotatey = MatrixTransform.yRotation(degToRad(config.rotate_y));
+        rotatez = MatrixTransform.zRotation(degToRad(config.rotate_z));
+        scale = MatrixTransform.scaling(config.scale_x, config.scale_y, config.scale_z);
+        objectToLoad.configMesh(translate, rotatex, rotatey, rotatez, scale, projection);
         SP.draw(objectToLoad, COLOR_RED);
-        
-        translate = MatrixTransform.translation(config.move_x, config.move_y+20);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
-        SP.draw(objectToLoad, COLOR_GREEN, true);
-
-        objectToLoad.loadMesh(pixel_downTriangle, 2);
-        translate = MatrixTransform.translation(config.move_x+10, config.move_y);
-        rotate = MatrixTransform.rotation(degToRad(config.rotate_h));
-        scale = MatrixTransform.scaling(config.scale_x*1.5, config.scale_y*1.5);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
-        SP.draw(objectToLoad, COLOR_GREEN, true);
-
-        translate = MatrixTransform.translation(config.move_x+10, config.move_y+30);
-        scale = MatrixTransform.scaling(config.scale_x, config.scale_y);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
-        SP.draw(objectToLoad, COLOR_BLUE);
-
-        objectToLoad.loadMesh(pixel_upTriangle, 2);
-        translate = MatrixTransform.translation(config.move_x+100, config.move_y);
-        rotate = MatrixTransform.rotation(degToRad(config.rotate_h));
-        scale = MatrixTransform.scaling(config.scale_x*0.5, config.scale_y*0.5);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
-        SP.draw(objectToLoad, COLOR_BLUE);
-
-        translate = MatrixTransform.translation(config.move_x+100, config.move_y+50);
-        scale = MatrixTransform.scaling(config.scale_x, config.scale_y);
-        objectToLoad.configMesh(translate, rotate, scale, projection);
-        SP.draw(objectToLoad, COLOR_RED, true);
 
         requestAnimationFrame(render);
     }

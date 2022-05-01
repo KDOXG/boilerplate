@@ -7,10 +7,12 @@ class ObjectModel
         this.object = null;
         this.x = 0;
         this.y = 0;
-        //this.z = 0;
+        this.z = 0;
         this.center = null;
         this.translate = null;
-        this.rotate = null;
+        this.rotatex = null;
+        this.rotatey = null;
+        this.rotatez = null;
         this.scale = null;
         this.projection = null;
     }
@@ -22,10 +24,12 @@ class ObjectModel
         this.center = this.objectCenter();
     }
 
-    configMesh(translate, rotate, scale, projection)
+    configMesh(translate, rotatex, rotatey, rotatez, scale, projection)
     {
         this.translate = translate;
-        this.rotate = rotate;
+        this.rotatex = rotatex;
+        this.rotatey = rotatey;
+        this.rotatez = rotatez;
         this.scale = scale;
         this.projection = projection;
     }
@@ -33,14 +37,16 @@ class ObjectModel
     transformMatrix(center = false)
     {
         var matrix = MatrixTransform.identity();
-        matrix = MatrixMultiply(matrix, this.projection);
-        matrix = MatrixMultiply(matrix, this.translate);
-        matrix = MatrixMultiply(matrix, this.rotate);
-        matrix = MatrixMultiply(matrix, this.scale);
+        matrix = MatrixMultiply4(matrix, this.projection);
+        matrix = MatrixMultiply4(matrix, this.translate);
+        matrix = MatrixMultiply4(matrix, this.rotatex);
+        matrix = MatrixMultiply4(matrix, this.rotatey);
+        matrix = MatrixMultiply4(matrix, this.rotatez);
+        matrix = MatrixMultiply4(matrix, this.scale);
         if (center)
         {
-            var moveCenter = MatrixMultiply(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1]));
-            matrix = MatrixMultiply(matrix, moveCenter);
+            var moveCenter = MatrixMultiply4(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
+            matrix = MatrixMultiply4(matrix, moveCenter);
         }
         return matrix;
     }
@@ -50,11 +56,11 @@ class ObjectModel
         if (this.object == null) return null;
         const filterX = function(v, i)
         {
-            return i % 2 == 0;
+            return i % 3 == 0;
         };
         const filterY = function(v, i)
         {
-            return i % 2 == 1;
+            return i % 3 == 1;
         };
         const filterZ = function(v, i)
         {
@@ -64,57 +70,13 @@ class ObjectModel
         var xMax = Math.max.apply(null, xAll);
         var yAll = this.object.filter(filterY);
         var yMax = Math.max.apply(null, yAll);
-        var zAll = null;
-        var zMax = 0;
-        if (this.dim >= 3)
-        {
-            zAll = this.object.filter(filterZ);
-            zMax = Math.max.apply(null, zAll);
-        }
+        var zAll = this.object.filter(filterZ);
+        var zMax = Math.max.apply(null, zAll);
         return [Math.floor(xMax / 2), Math.floor(yMax / 2), Math.floor(zMax / 2)];
     }
 
     getCenter()
     {
         return this.center;
-    }
-
-    translate(values)
-    {
-        if (this.object == null) return;
-        var it;
-        for (let i = 0; i < this.object.length / this.dim; i++)
-        {
-            it = i*this.dim;
-            for (let j = 0; j < this.dim; j++)
-            {
-                this.object[it+j] += values[j];
-            }
-        }
-    }
-
-    /**
-     * Not working
-    */
-    rotate(values)
-    {
-        if (this.object == null) return;
-        var it;
-        switch (this.dim)
-        {
-            case 2:
-                for (let i = 0; i < this.object.length / this.dim; i++)
-                {
-                    it = i * this.dim;
-                    this.object[it] = this.object[it] * values[1] + this.object[it+1] * values[0];
-                    this.object[it+1] = this.object[it+1] * values[1] - this.object[it] * values[0];
-                }
-            break;
-            case 3:
-
-            break;
-            default:
-                return;
-        }
     }
 }
