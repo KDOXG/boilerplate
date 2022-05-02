@@ -1,19 +1,19 @@
 "use strict";
 
 function main() {
-    var SP = new ShaderProgram();
-    var objectToLoad = new ObjectModel();
-    var camera = new Camera();
+    let SP = new ShaderProgram();
+    let objectToLoad = new ObjectModel();
+    let camera = new Camera();
 
-    var translate = null;
-    var rotatex = null;
-    var rotatey = null;
-    var rotatez = null;
-    var scale = null;
-    var projection = null;
+    let translate = null;
+    let rotatex = null;
+    let rotatey = null;
+    let rotatez = null;
+    let scale = null;
+    let projection = null;
 
-    var cameraMatrix = null;
-    var cameraMatrixTranslate = null;
+    let cameraMatrix = null;
+    let cameraMatrixTranslate = null;
 
     SP.setupProgram();
     SP.getLocations();

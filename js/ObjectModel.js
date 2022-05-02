@@ -43,7 +43,7 @@ class ObjectModel
 
     transformMatrix(center = false)
     {
-        var matrix = MatrixTransform.identity();
+        let matrix = MatrixTransform.identity();
         matrix = MatrixMultiply4(matrix, this.projection);
         matrix = MatrixMultiply4(matrix, this.translate);
         matrix = MatrixMultiply4(matrix, this.rotatex);
@@ -52,7 +52,7 @@ class ObjectModel
         matrix = MatrixMultiply4(matrix, this.scale);
         if (center)
         {
-            var moveCenter = MatrixMultiply4(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
+            let moveCenter = MatrixMultiply4(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
             matrix = MatrixMultiply4(matrix, moveCenter);
         }
         return matrix;
@@ -73,12 +73,12 @@ class ObjectModel
         {
             return i % 3 == 2;
         };
-        var xAll = this.object.filter(filterX);
-        var xMax = Math.max.apply(null, xAll);
-        var yAll = this.object.filter(filterY);
-        var yMax = Math.max.apply(null, yAll);
-        var zAll = this.object.filter(filterZ);
-        var zMax = Math.max.apply(null, zAll);
+        let xAll = this.object.filter(filterX);
+        let xMax = Math.max.apply(null, xAll);
+        let yAll = this.object.filter(filterY);
+        let yMax = Math.max.apply(null, yAll);
+        let zAll = this.object.filter(filterZ);
+        let zMax = Math.max.apply(null, zAll);
         return [Math.floor(xMax / 2), Math.floor(yMax / 2), Math.floor(zMax / 2)];
     }
 
