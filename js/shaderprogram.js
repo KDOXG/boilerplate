@@ -29,14 +29,11 @@ void main() {
 }
 `;
 
-class ShaderProgram
-{
-    constructor()
-    {
+class ShaderProgram {
+    constructor() {
         this.canvas = document.querySelector("#canvas");
         this.gl = canvas.getContext("webgl2");
-        if (!this.gl)
-        {
+        if (!this.gl) {
             console.log("Error canvas");
         }
         webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
@@ -56,8 +53,7 @@ class ShaderProgram
         this.matrixLocation = null;
     }
 
-    setupProgram()
-    {
+    setupProgram() {
         const vertexShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         const fragmentShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 
@@ -67,51 +63,44 @@ class ShaderProgram
         this.gl.compileShader(vertexShader);
         this.gl.compileShader(fragmentShader);
 
-        if (!this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS))
-        {
-        console.log('erro vertex shader');
-        console.log(this.gl.getShaderInfoLog(vertexShader));
+        if (!this.gl.getShaderParameter(vertexShader, this.gl.COMPILE_STATUS)) {
+            console.log('erro vertex shader');
+            console.log(this.gl.getShaderInfoLog(vertexShader));
         }
 
-        if (!this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS))
-        {
-        console.log('erro fragment shader');
-        console.log(this.gl.getShaderInfoLog(fragmentShader));
+        if (!this.gl.getShaderParameter(fragmentShader, this.gl.COMPILE_STATUS)) {
+            console.log('erro fragment shader');
+            console.log(this.gl.getShaderInfoLog(fragmentShader));
         }
 
         this.gl.attachShader(this.program, vertexShader);
         this.gl.attachShader(this.program, fragmentShader);
 
         this.gl.linkProgram(this.program);
-        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS))
-        {
+        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
             console.log('erro linkProgram');
             console.log(this.gl.getProgramInfoLog(this.program));
         }
     }
 
-    runProgram()
-    {
+    runProgram() {
         this.gl.useProgram(this.program);
         this.gl.bindVertexArray(this.vao);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.CULL_FACE);
     }
 
-    getLocations()
-    {
+    getLocations() {
         this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
         this.colorLocation = this.gl.getAttribLocation(this.program, "a_color");
         this.matrixLocation = this.gl.getUniformLocation(this.program, "u_matrix");
     }
 
-    getCanvasSize()
-    {
+    getCanvasSize() {
         return [this.gl.canvas.clientWidth, this.gl.canvas.clientHeight];
     }
 
-    setPosition(object, size = 3)
-    {
+    setPosition(object, size = 3) {
         this.positionBuffer = this.gl.createBuffer();
         this.vao = this.gl.createVertexArray();
         this.gl.bindVertexArray(this.vao);
@@ -127,8 +116,7 @@ class ShaderProgram
         this.gl.vertexAttribPointer(this.positionLocation, size, type, normalize, stride, offset);
     }
 
-    setColor(texture, size = 3)
-    {
+    setColor(texture, size = 3) {
         this.colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
         this.gl.enableVertexAttribArray(this.colorLocation);
@@ -142,36 +130,30 @@ class ShaderProgram
         this.gl.vertexAttribPointer(this.colorLocation, size, type, normalize, stride, offset);
     }
 
-    putObject(vertexarrayData, drawmodeData = this.gl.STATIC_DRAW)
-    {
+    putObject(vertexarrayData, drawmodeData = this.gl.STATIC_DRAW) {
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexarrayData), drawmodeData);
     }
 
-    putColor(color, drawmodeData = this.gl.STATIC_DRAW)
-    {
+    putColor(color, drawmodeData = this.gl.STATIC_DRAW) {
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Uint8Array(color), drawmodeData);
     }
 
-    setScreen()
-    {
+    setScreen() {
         webglUtils.resizeCanvasToDisplaySize(this.gl.canvas);
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
     }
 
-    clearColor()
-    {
+    clearColor() {
         this.gl.clearColor(1, 1, 1, 1);
         this.gl.clear(this.gl.COLLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
-    primitiveDraw(offset = 0, count = 3)
-    {
+    primitiveDraw(offset = 0, count = 3) {
         const primitive = this.gl.TRIANGLES;
         this.gl.drawArrays(primitive, offset, count);
     }
 
-    draw(object, center = false)
-    {
+    draw(object, center = false) {
         this.gl.uniformMatrix4fv(this.matrixLocation, false, object.transformMatrix(center));
         this.setPosition(object.object);
         this.setColor(object.texture);

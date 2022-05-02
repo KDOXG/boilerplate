@@ -27,7 +27,7 @@ function main()
     function render()
     {
         //debugger;
-        projection = MatrixTransform.orthographic(0, SP.getCanvasSize()[0], SP.getCanvasSize()[1], 0, 400, -400);
+        projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
         objectToLoad.loadMesh(LetterF_3D);
         objectToLoad.loadTexture(color_LetterF_3D);
