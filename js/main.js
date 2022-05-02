@@ -1,9 +1,9 @@
 "use strict";
 
-function main()
-{
+function main() {
     var SP = new ShaderProgram();
     var objectToLoad = new ObjectModel();
+    var camera = new Camera();
 
     var translate = null;
     var rotatex = null;
@@ -11,6 +11,9 @@ function main()
     var rotatez = null;
     var scale = null;
     var projection = null;
+
+    var cameraMatrix = null;
+    var cameraMatrixTranslate = null;
 
     SP.setupProgram();
     SP.getLocations();
@@ -23,11 +26,15 @@ function main()
     loadGUI();
 
     //Main render loop
-    
-    function render()
-    {
+
+    function render() {
         //debugger;
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
+
+        cameraMatrix = MatrixTransform.yRotation(degToRad(config.cameraAngle));
+        cameraMatrixTranslate = MatrixTransform.translation(0, 0, config.radius * 1.5);
+        camera.configCamera(cameraMatrix, cameraMatrixTranslate);
+        camera.setProjectionMatrix(projection);
 
         objectToLoad.loadMesh(LetterF_3D);
         objectToLoad.loadTexture(color_LetterF_3D);
@@ -36,7 +43,8 @@ function main()
         rotatey = MatrixTransform.yRotation(degToRad(config.rotate_y));
         rotatez = MatrixTransform.zRotation(degToRad(config.rotate_z));
         scale = MatrixTransform.scaling(config.scale_x, config.scale_y, config.scale_z);
-        objectToLoad.configMesh(translate, rotatex, rotatey, rotatez, scale, projection);
+        objectToLoad.configMesh(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+
         SP.draw(objectToLoad);
 
         requestAnimationFrame(render);
