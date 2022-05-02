@@ -1,3 +1,24 @@
+
+
+function cross(a, b) {
+    return [a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0]];
+}
+
+function subtractVectors(a, b) {
+    return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+}
+
+function normalize(v) {
+    let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    if (length > 0.00001) {
+        return [v[0] / length, v[1] / length, v[2] / length];
+    } else {
+        return [0, 0, 0];
+    }
+}
+
 var MatrixTransform =
 {
     perspective: function (fieldOfViewInRadians, aspect, near, far) {
@@ -9,6 +30,23 @@ var MatrixTransform =
             0, f, 0, 0,
             0, 0, (near + far) * rangeInv, -1,
             0, 0, near * far * rangeInv * 2, 0
+        ];
+    },
+
+    lookAt: function (cameraPosition, target, up) {
+        let zAxis = normalize(
+            subtractVectors(cameraPosition, target));
+        let xAxis = normalize(cross(up, zAxis));
+        let yAxis = normalize(cross(zAxis, xAxis));
+
+        return [
+            xAxis[0], xAxis[1], xAxis[2], 0,
+            yAxis[0], yAxis[1], yAxis[2], 0,
+            zAxis[0], zAxis[1], zAxis[2], 0,
+            cameraPosition[0],
+            cameraPosition[1],
+            cameraPosition[2],
+            1,
         ];
     },
 
@@ -161,7 +199,7 @@ var MatrixTransform =
     }
 };
 
-function MatrixMultiply4(a, b) {
+function MatrixMultiply(a, b) {
     let b00 = b[0 * 4 + 0];
     let b01 = b[0 * 4 + 1];
     let b02 = b[0 * 4 + 2];

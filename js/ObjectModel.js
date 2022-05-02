@@ -44,16 +44,16 @@ class ObjectModel
     transformMatrix(center = false)
     {
         let matrix = MatrixTransform.identity();
-        matrix = MatrixMultiply4(matrix, this.projection);
-        matrix = MatrixMultiply4(matrix, this.translate);
-        matrix = MatrixMultiply4(matrix, this.rotatex);
-        matrix = MatrixMultiply4(matrix, this.rotatey);
-        matrix = MatrixMultiply4(matrix, this.rotatez);
-        matrix = MatrixMultiply4(matrix, this.scale);
+        matrix = MatrixMultiply(matrix, this.projection);
+        matrix = MatrixMultiply(matrix, this.translate);
+        matrix = MatrixMultiply(matrix, this.rotatex);
+        matrix = MatrixMultiply(matrix, this.rotatey);
+        matrix = MatrixMultiply(matrix, this.rotatez);
+        matrix = MatrixMultiply(matrix, this.scale);
         if (center)
         {
-            let moveCenter = MatrixMultiply4(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
-            matrix = MatrixMultiply4(matrix, moveCenter);
+            let moveCenter = MatrixMultiply(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
+            matrix = MatrixMultiply(matrix, moveCenter);
         }
         return matrix;
     }
@@ -80,10 +80,5 @@ class ObjectModel
         let zAll = this.object.filter(filterZ);
         let zMax = Math.max.apply(null, zAll);
         return [Math.floor(xMax / 2), Math.floor(yMax / 2), Math.floor(zMax / 2)];
-    }
-
-    getCenter()
-    {
-        return this.center;
     }
 }
