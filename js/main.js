@@ -12,7 +12,6 @@ function main() {
     let scale = null;
     let projection = null;
 
-    let cameraMatrix = null;
     let cameraMatrixTranslate = null;
     let cameraMatrixRotatex = null;
     let cameraMatrixRotatey = null;
@@ -36,13 +35,11 @@ function main() {
         //debugger;
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
-        cameraMatrix = MatrixTransform.yRotation(degToRad(config_camera.cameraAngle));
         cameraMatrixTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
         cameraMatrixRotatex = MatrixTransform.xRotation(degToRad(config_camera.rotate_x));
         cameraMatrixRotatey = MatrixTransform.yRotation(degToRad(config_camera.rotate_y));
         cameraMatrixRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
-        //camera.configCamera(cameraMatrix, cameraMatrixTranslate);
-        camera.configCamera(cameraMatrix, cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez);
+        camera.configCamera(cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez);
 
         camera.setProjectionMatrix(projection);
 
@@ -53,11 +50,12 @@ function main() {
         rotatey = MatrixTransform.yRotation(degToRad(config_object.rotate_y));
         rotatez = MatrixTransform.zRotation(degToRad(config_object.rotate_z));
         scale = MatrixTransform.scaling(config_object.scale_x, config_object.scale_y, config_object.scale_z);
-        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
 
-        //cameraObject = config.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
+        camera.setLookAt(objectToLoad.configCenter());
+        cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
+        //cameraObject = camera.viewProjectionMatrix;
 
-        camera.setLookAt(objectToLoad.center);
+        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
 
         SP.draw(objectToLoad);
 

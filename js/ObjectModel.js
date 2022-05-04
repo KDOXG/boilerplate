@@ -41,6 +41,13 @@ class ObjectModel
         this.projection = projection;
     }
 
+    configCenter()
+    {
+        let center = null;
+        center = this.objectCenter();
+        return center;
+    }
+
     transformMatrix(center = false)
     {
         let matrix = MatrixTransform.identity();
@@ -58,9 +65,10 @@ class ObjectModel
         return matrix;
     }
 
-    objectCenter()
+    objectCenter(model = null)
     {
-        if (this.object == null) return null;
+        if (this.object == null && model == null) return null;
+        let modelWorking = model == null ? this.object : model;
         const filterX = function(v, i)
         {
             return i % 3 == 0;
@@ -73,11 +81,11 @@ class ObjectModel
         {
             return i % 3 == 2;
         };
-        let xAll = this.object.filter(filterX);
+        let xAll = modelWorking.filter(filterX);
         let xMax = Math.max.apply(null, xAll);
-        let yAll = this.object.filter(filterY);
+        let yAll = modelWorking.filter(filterY);
         let yMax = Math.max.apply(null, yAll);
-        let zAll = this.object.filter(filterZ);
+        let zAll = modelWorking.filter(filterZ);
         let zMax = Math.max.apply(null, zAll);
         return [Math.floor(xMax / 2), Math.floor(yMax / 2), Math.floor(zMax / 2)];
     }

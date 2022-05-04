@@ -14,7 +14,7 @@ var config = {
 };
 
 var config_object = {
-    move_x: -150,
+    move_x: 0,
     move_y: 0,
     move_z: -360,
     rotate_x: 190,
@@ -26,8 +26,6 @@ var config_object = {
 };
 
 var config_camera = {
-    radius: 200,
-    cameraAngle: 0,
     move_x: 0,
     move_y: 0,
     move_z: 0,
@@ -55,8 +53,6 @@ const loadGUI = () => {
     guiMesh.add(config_object, "scale_z", -3, 3, 0.1);
 
     const guiCamera = gui.addFolder("Camera");
-    guiCamera.add(config_camera, "radius", 0, 400, 1);
-    guiCamera.add(config_camera, "cameraAngle", -360, 360, 1);
     guiCamera.add(config_camera, "move_x", -400, 400, 1);
     guiCamera.add(config_camera, "move_y", -400, 400, 1);
     guiCamera.add(config_camera, "move_z", -400, 400, 1);

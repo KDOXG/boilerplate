@@ -12,10 +12,9 @@ class Camera
         this.zAxis = null;
     }
 
-    configCamera(cameraMatrix, cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez)
+    configCamera(cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez)
     {
         let matrix = MatrixTransform.identity();
-        //matrix = MatrixMultiply(matrix, cameraMatrix);
         matrix = MatrixMultiply(matrix, cameraMatrixRotatex);
         matrix = MatrixMultiply(matrix, cameraMatrixRotatey);
         matrix = MatrixMultiply(matrix, cameraMatrixRotatez);
