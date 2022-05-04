@@ -14,6 +14,11 @@ function main() {
 
     let cameraMatrix = null;
     let cameraMatrixTranslate = null;
+    let cameraMatrixRotatex = null;
+    let cameraMatrixRotatey = null;
+    let cameraMatrixRotatez = null;
+
+    let cameraObject = null;
 
     SP.setupProgram();
     SP.getLocations();
@@ -31,19 +36,28 @@ function main() {
         //debugger;
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
-        cameraMatrix = MatrixTransform.yRotation(degToRad(config.cameraAngle));
-        cameraMatrixTranslate = MatrixTransform.translation(0, 0, config.radius * 1.5);
-        camera.configCamera(cameraMatrix, cameraMatrixTranslate);
+        cameraMatrix = MatrixTransform.yRotation(degToRad(config_camera.cameraAngle));
+        cameraMatrixTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
+        cameraMatrixRotatex = MatrixTransform.xRotation(degToRad(config_camera.rotate_x));
+        cameraMatrixRotatey = MatrixTransform.yRotation(degToRad(config_camera.rotate_y));
+        cameraMatrixRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
+        //camera.configCamera(cameraMatrix, cameraMatrixTranslate);
+        camera.configCamera(cameraMatrix, cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez);
+
         camera.setProjectionMatrix(projection);
 
         objectToLoad.loadMesh(LetterF_3D);
         objectToLoad.loadTexture(color_LetterF_3D);
-        translate = MatrixTransform.translation(config.move_x, config.move_y, config.move_z);
-        rotatex = MatrixTransform.xRotation(degToRad(config.rotate_x));
-        rotatey = MatrixTransform.yRotation(degToRad(config.rotate_y));
-        rotatez = MatrixTransform.zRotation(degToRad(config.rotate_z));
-        scale = MatrixTransform.scaling(config.scale_x, config.scale_y, config.scale_z);
-        objectToLoad.configMesh(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+        translate = MatrixTransform.translation(config_object.move_x, config_object.move_y, config_object.move_z);
+        rotatex = MatrixTransform.xRotation(degToRad(config_object.rotate_x));
+        rotatey = MatrixTransform.yRotation(degToRad(config_object.rotate_y));
+        rotatez = MatrixTransform.zRotation(degToRad(config_object.rotate_z));
+        scale = MatrixTransform.scaling(config_object.scale_x, config_object.scale_y, config_object.scale_z);
+        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+
+        //cameraObject = config.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
+
+        camera.setLookAt(objectToLoad.center);
 
         SP.draw(objectToLoad);
 

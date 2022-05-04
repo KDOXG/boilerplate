@@ -31,7 +31,7 @@ class ObjectModel
         this.texture = texture.slice();
     }
 
-    configMesh(translate, rotatex, rotatey, rotatez, scale, projection)
+    configObject(translate, rotatex, rotatey, rotatez, scale, projection)
     {
         this.translate = translate;
         this.rotatex = rotatex;
