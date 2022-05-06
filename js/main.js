@@ -51,11 +51,12 @@ function main() {
         rotatez = MatrixTransform.zRotation(degToRad(config_object.rotate_z));
         scale = MatrixTransform.scaling(config_object.scale_x, config_object.scale_y, config_object.scale_z);
 
+        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+
         camera.setLookAt(objectToLoad.configCenter());
         cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
-        //cameraObject = camera.viewProjectionMatrix;
 
-        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
+        //objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
 
         SP.draw(objectToLoad);
 

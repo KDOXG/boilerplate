@@ -31,7 +31,13 @@ class Camera
 
     setLookAt(position, up = [0, 1, 0])
     {
-        this.lookAt = MatrixTransform.lookAt(this.cameraPosition, position, up);
-        this.viewLookAt = MatrixTransform.inverse(this.lookAt);
+        let matrix = null;
+        matrix = MatrixTransform.lookAt(this.cameraPosition, position, up);
+        matrix = MatrixMultiply(matrix, cameraMatrixRotatex);
+        matrix = MatrixMultiply(matrix, cameraMatrixRotatey);
+        matrix = MatrixMultiply(matrix, cameraMatrixRotatez);
+        matrix = MatrixMultiply(matrix, cameraMatrixTranslate);
+        this.lookAt = matrix;
+        this.viewLookAt = MatrixTransform.inverse(matrix);
     }
 }

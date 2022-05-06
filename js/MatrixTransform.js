@@ -1,5 +1,3 @@
-
-
 function cross(a, b) {
     return [a[1] * b[2] - a[2] * b[1],
     a[2] * b[0] - a[0] * b[2],
@@ -252,3 +250,33 @@ function MatrixMultiply(a, b) {
         b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33,
     ];
 };
+
+function listToMatrix(list, elementsPerSubArray) {
+    let matrix = [], i, k;
+
+    for (i = 0, k = -1; i < list.length; i++) {
+        if (i % elementsPerSubArray === 0) {
+            k++;
+            matrix[k] = [];
+        }
+
+        matrix[k].push(list[i]);
+    }
+
+    return matrix;
+}
+
+function AnyMatrixMultiply(m1, m2) {
+    let result = [];
+    for (let i = 0; i < m1.length; i++) {
+        result[i] = [];
+        for (let j = 0; j < m2[0].length; j++) {
+            let sum = 0;
+            for (let k = 0; k < m1[0].length; k++) {
+                sum += m1[i][k] * m2[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+    return result;
+}

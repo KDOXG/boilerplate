@@ -44,20 +44,34 @@ class ObjectModel
     configCenter()
     {
         let center = null;
-        center = this.objectCenter();
+        let tMatrix = listToMatrix(this.transformMatrix(false, false), this.dim + 1);
+        let tObject = listToMatrix(this.object, this.dim);
+        for (let i = 0; i < tObject.length; i++)
+            tObject[i].push(1);
+        let transformed = AnyMatrixMultiply(tObject, tMatrix);
+        let transformedObject = [];
+        for (let i = 0; i < transformed.length; i++)
+        {
+            transformed[i].pop();
+            for (let j = 0; j < transformed[i].length; j++)
+                transformedObject.push(transformed[i][j]);
+        }
+
+        center = this.objectCenter(transformedObject);
         return center;
     }
 
-    transformMatrix(center = false)
+    transformMatrix(rotateOnCenter = false, projectionUse = true)
     {
         let matrix = MatrixTransform.identity();
-        matrix = MatrixMultiply(matrix, this.projection);
+        if (projectionUse)
+            matrix = MatrixMultiply(matrix, this.projection);
         matrix = MatrixMultiply(matrix, this.translate);
         matrix = MatrixMultiply(matrix, this.rotatex);
         matrix = MatrixMultiply(matrix, this.rotatey);
         matrix = MatrixMultiply(matrix, this.rotatez);
         matrix = MatrixMultiply(matrix, this.scale);
-        if (center)
+        if (rotateOnCenter)
         {
             let moveCenter = MatrixMultiply(MatrixTransform.identity(), MatrixTransform.translation(-this.center[0], -this.center[1], -this.center[2]));
             matrix = MatrixMultiply(matrix, moveCenter);

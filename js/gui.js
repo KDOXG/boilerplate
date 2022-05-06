@@ -2,19 +2,10 @@ var config = {
     FOV: 60,
     zNear: 1,
     zFar: 2000,
-    move_x: -150,
-    move_y: 0,
-    move_z: -360,
-    rotate_x: 190,
-    rotate_y: 40,
-    rotate_z: 30,
-    scale_x: 1,
-    scale_y: 1,
-    scale_z: 1
 };
 
 var config_object = {
-    move_x: 0,
+    move_x: -150,
     move_y: 0,
     move_z: -360,
     rotate_x: 190,
