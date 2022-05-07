@@ -2,6 +2,7 @@ var config = {
     FOV: 60,
     zNear: 1,
     zFar: 2000,
+    animation: 0
 };
 
 var config_object = {
@@ -51,6 +52,8 @@ const loadGUI = () => {
     guiCamera.add(config_camera, "rotate_y", -360, 360, 1);
     guiCamera.add(config_camera, "rotate_z", -360, 360, 1);
     guiCamera.add(config_camera, "lookAt", 0, 1, 1);
+
+    gui.add(config, "animation", 0, 3, 1);
 
     gui.open();
     guiCamera.open();

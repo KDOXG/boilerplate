@@ -5,6 +5,13 @@ function main() {
     let objectToLoad = new ObjectModel();
     let camera = new Camera();
 
+    let animationMode = config.animation;
+    let animationObjectParam = null;
+    let animationCameraParam = null;
+    let then = 0;
+    let deltaTime = 0;
+    let rotationSpeed = 1.2;
+
     let translate = null;
     let rotatex = null;
     let rotatey = null;
@@ -12,10 +19,10 @@ function main() {
     let scale = null;
     let projection = null;
 
-    let cameraMatrixTranslate = null;
-    let cameraMatrixRotatex = null;
-    let cameraMatrixRotatey = null;
-    let cameraMatrixRotatez = null;
+    let cameraTranslate = null;
+    let cameraRotatex = null;
+    let cameraRotatey = null;
+    let cameraRotatez = null;
 
     let cameraObject = null;
 
@@ -31,15 +38,16 @@ function main() {
 
     //Main render loop
 
-    function render() {
+    function render(now) {
+
         //debugger;
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
-        cameraMatrixTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
-        cameraMatrixRotatex = MatrixTransform.xRotation(degToRad(config_camera.rotate_x));
-        cameraMatrixRotatey = MatrixTransform.yRotation(degToRad(config_camera.rotate_y));
-        cameraMatrixRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
-        camera.configCamera(cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez);
+        cameraTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
+        cameraRotatex = MatrixTransform.xRotation(degToRad(config_camera.rotate_x));
+        cameraRotatey = MatrixTransform.yRotation(degToRad(config_camera.rotate_y));
+        cameraRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
+        camera.configCamera(cameraTranslate, cameraRotatex, cameraRotatey, cameraRotatez);
 
         camera.setProjectionMatrix(projection);
 
@@ -53,16 +61,137 @@ function main() {
 
         objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
 
-        camera.setLookAt(objectToLoad.configCenter());
+        //camera.setLookAt(objectToLoad.configCenter());
         cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
 
         //objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
 
         SP.draw(objectToLoad);
 
-        requestAnimationFrame(render);
+        animationMode = config.animation;
+        switch(animationMode)
+        {
+            case 0:
+                requestAnimationFrame(render);
+            break;
+            case 1:
+                animationObjectParam = Object.assign({}, config_object);
+                requestAnimationFrame(animation1);
+            break;
+            case 2:
+                animationObjectParam = Object.assign({}, config_object);
+                requestAnimationFrame(animation2);
+            break;
+            case 3:
+                animationObjectParam = Object.assign({}, config_object);
+                requestAnimationFrame(animation3);
+            break;
+            default:
+                requestAnimationFrame(render);
+            break;
+        }
     }
-    requestAnimationFrame(render);
+
+    function animation1(now) {
+        now *= 0.001;
+        deltaTime = now - then;
+        then = now;
+
+        animationObjectParam.rotate_y += rotationSpeed * deltaTime;
+
+        rotatey = MatrixTransform.yRotation(animationObjectParam.rotate_y);
+        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+
+        SP.draw(objectToLoad);
+
+        animationMode = config.animation;
+        switch(animationMode)
+        {
+            case 0:
+                requestAnimationFrame(render);
+            break;
+            case 1:
+                requestAnimationFrame(animation1);
+            break;
+            case 2:
+                requestAnimationFrame(animation2);
+            break;
+            case 3:
+                requestAnimationFrame(animation3);
+            break;
+            default:
+                requestAnimationFrame(render);
+            break;
+        }
+    }
+
+    function animation2() {
+
+
+        animationMode = config.animation;
+        switch(animationMode)
+        {
+            case 0:
+                requestAnimationFrame(render);
+            break;
+            case 1:
+                requestAnimationFrame(animation1);
+            break;
+            case 2:
+                requestAnimationFrame(animation2);
+            break;
+            case 3:
+                requestAnimationFrame(animation3);
+            break;
+            default:
+                requestAnimationFrame(render);
+            break;
+        }
+    }
+
+    function animation3() {
+
+
+        animationMode = config.animation;
+        switch(animationMode)
+        {
+            case 0:
+                requestAnimationFrame(render);
+            break;
+            case 1:
+                requestAnimationFrame(animation1);
+            break;
+            case 2:
+                requestAnimationFrame(animation2);
+            break;
+            case 3:
+                requestAnimationFrame(animation3);
+            break;
+            default:
+                requestAnimationFrame(render);
+            break;
+        }
+    }
+
+    animationMode = config.animation;
+    switch(animationMode)
+    {
+        case 0:
+            requestAnimationFrame(render);
+        break;
+        case 1:
+            requestAnimationFrame(animation1);
+        break;
+        case 2:
+            requestAnimationFrame(animation2);
+        break;
+        case 3:
+            requestAnimationFrame(animation3);
+        break;
+        default:
+            requestAnimationFrame(render);
+        break;
+    }
 }
 
 main();

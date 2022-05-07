@@ -10,15 +10,23 @@ class Camera
         this.cameraPosition = null;
         this.target = null;
         this.zAxis = null;
+        this.cameraRotatex = null;
+        this.cameraRotatey = null;
+        this.cameraRotatez = null;
+        this.cameraTranslate = null;
     }
 
-    configCamera(cameraMatrixTranslate, cameraMatrixRotatex, cameraMatrixRotatey, cameraMatrixRotatez)
+    configCamera(cameraTranslate, cameraRotatex, cameraRotatey, cameraRotatez)
     {
         let matrix = MatrixTransform.identity();
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatex);
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatey);
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatez);
-        matrix = MatrixMultiply(matrix, cameraMatrixTranslate);
+        matrix = MatrixMultiply(matrix, cameraRotatex);
+        matrix = MatrixMultiply(matrix, cameraRotatey);
+        matrix = MatrixMultiply(matrix, cameraRotatez);
+        matrix = MatrixMultiply(matrix, cameraTranslate);
+        this.cameraRotatex = cameraRotatex;
+        this.cameraRotatey = cameraRotatey;
+        this.cameraRotatez = cameraRotatez;
+        this.cameraTranslate = cameraTranslate;
         this.matrix = matrix;
         this.cameraPosition = [matrix[12], matrix[13], matrix[14]];
         this.matrixView = MatrixTransform.inverse(matrix);
@@ -33,10 +41,10 @@ class Camera
     {
         let matrix = null;
         matrix = MatrixTransform.lookAt(this.cameraPosition, position, up);
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatex);
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatey);
-        matrix = MatrixMultiply(matrix, cameraMatrixRotatez);
-        matrix = MatrixMultiply(matrix, cameraMatrixTranslate);
+        matrix = MatrixMultiply(matrix, this.cameraRotatex);
+        matrix = MatrixMultiply(matrix, this.cameraRotatey);
+        matrix = MatrixMultiply(matrix, this.cameraRotatez);
+        matrix = MatrixMultiply(matrix, this.cameraTranslate);
         this.lookAt = matrix;
         this.viewLookAt = MatrixTransform.inverse(matrix);
     }
