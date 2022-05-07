@@ -53,7 +53,7 @@ function main() {
 
         objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
 
-        camera.setLookAt(objectToLoad.configCenter());
+        //camera.setLookAt(objectToLoad.configCenter());
         cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
 
         //objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
