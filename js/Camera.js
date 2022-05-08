@@ -2,6 +2,7 @@ class Camera
 {
     constructor()
     {
+        this.param = null;
         this.matrix = null;
         this.lookAt = null;
         this.matrixView = null;
@@ -9,20 +10,23 @@ class Camera
         this.viewLookAt = null;
         this.viewProjectionLookAt = null;
         this.cameraPosition = null;
-        this.target = null;
-        this.zAxis = null;
         this.cameraRotatex = null;
         this.cameraRotatey = null;
         this.cameraRotatez = null;
         this.cameraTranslate = null;
     }
 
-    configCamera(cameraTranslate, cameraRotatex, cameraRotatey, cameraRotatez)
+    loadCamera(param)
     {
-        this.cameraRotatex = cameraRotatex;
-        this.cameraRotatey = cameraRotatey;
-        this.cameraRotatez = cameraRotatez;
-        this.cameraTranslate = cameraTranslate;
+        this.param = param;
+    }
+
+    configCamera()
+    {
+        this.cameraRotatex = MatrixTransform.xRotation(degToRad(this.param.rotate_x));;
+        this.cameraRotatey = MatrixTransform.yRotation(degToRad(this.param.rotate_y));;
+        this.cameraRotatez = MatrixTransform.zRotation(degToRad(this.param.rotate_z));;
+        this.cameraTranslate = MatrixTransform.translation(this.param.move_x, this.param.move_y, this.param.move_z);;
     }
 
     setCamera()
@@ -53,5 +57,10 @@ class Camera
     setProjectionLookAt(projectionMatrix)
     {
         this.viewProjectionLookAt = MatrixMultiply(projectionMatrix, this.viewLookAt);
+    }
+
+    getViewMode()
+    {
+        return this.param.lookAt == 0 ? this.viewProjectionMatrix : this.viewProjectionLookAt;
     }
 }

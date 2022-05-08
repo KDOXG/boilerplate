@@ -153,6 +153,15 @@ class ShaderProgram {
         this.gl.drawArrays(primitive, offset, count);
     }
 
+    initSystem()
+    {
+        this.setupProgram();
+        this.getLocations();
+        this.setScreen();
+        this.clearColor();
+        this.runProgram();
+    }
+
     draw(object, center = false) {
         this.gl.uniformMatrix4fv(this.matrixLocation, false, object.transformMatrix(center));
         this.setPosition(object.object);

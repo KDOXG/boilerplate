@@ -2,11 +2,9 @@ class ObjectModel
 {
     constructor()
     {
+        this.param = null;
         this.dim = 3;
         this.object = null;
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
         this.center = null;
         //For transformation
         this.translate = null;
@@ -19,8 +17,9 @@ class ObjectModel
         this.texture = null;
     }
 
-    loadMesh(object, dim = 3)
+    loadMesh(object, param, dim = 3)
     {
+        this.param = param;
         this.object = object.slice();
         this.dim = dim;
         this.center = this.objectCenter();
@@ -31,13 +30,13 @@ class ObjectModel
         this.texture = texture.slice();
     }
 
-    configObject(translate, rotatex, rotatey, rotatez, scale)
+    configObject()
     {
-        this.translate = translate;
-        this.rotatex = rotatex;
-        this.rotatey = rotatey;
-        this.rotatez = rotatez;
-        this.scale = scale;
+        this.translate = MatrixTransform.translation(this.param.move_x, this.param.move_y, this.param.move_z);
+        this.rotatex = MatrixTransform.xRotation(degToRad(this.param.rotate_x));
+        this.rotatey = MatrixTransform.yRotation(degToRad(this.param.rotate_y));
+        this.rotatez = MatrixTransform.zRotation(degToRad(this.param.rotate_z));
+        this.scale = MatrixTransform.scaling(this.param.scale_x, this.param.scale_y, this.param.scale_z);
     }
 
     setProjection(projection)

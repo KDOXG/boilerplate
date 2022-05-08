@@ -1,72 +1,45 @@
 "use strict";
 
 function main() {
+    //Classes
     let SP = new ShaderProgram();
     let objectToLoad = new ObjectModel();
     let camera = new Camera();
 
+    //Animation
+    let animationParam = 0;
     let animationMode = config.animation;
-    let animationObjectParam = null;
-    let animationCameraParam = null;
     let then = 0;
     let deltaTime = 0;
     let rotationSpeed = 1.2;
 
-    let translate = null;
-    let rotatex = null;
-    let rotatey = null;
-    let rotatez = null;
-    let scale = null;
+    //Mesh transformation matrices
     let projection = null;
 
-    let cameraTranslate = null;
-    let cameraRotatex = null;
-    let cameraRotatey = null;
-    let cameraRotatez = null;
-
-    let cameraObject = null;
-
-    SP.setupProgram();
-    SP.getLocations();
-
-    SP.setScreen();
-    SP.clearColor();
-
-    SP.runProgram();
+    SP.initSystem();
 
     loadGUI();
 
     //Main render loop
 
-    function render() {
+    function render(now) {
+        then = now;
 
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
-        cameraTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
-        cameraRotatex = MatrixTransform.xRotation(degToRad(config_camera.rotate_x));
-        cameraRotatey = MatrixTransform.yRotation(degToRad(config_camera.rotate_y));
-        cameraRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
-        camera.configCamera(cameraTranslate, cameraRotatex, cameraRotatey, cameraRotatez);
-
+        camera.loadCamera(config_camera);
+        camera.configCamera();
         camera.setCamera();
         camera.setProjectionMatrix(projection);
 
-        objectToLoad.loadMesh(LetterF_3D);
+        objectToLoad.loadMesh(LetterF_3D, config_object);
         objectToLoad.loadTexture(color_LetterF_3D);
-        
-        translate = MatrixTransform.translation(config_object.move_x, config_object.move_y, config_object.move_z);
-        rotatex = MatrixTransform.xRotation(degToRad(config_object.rotate_x));
-        rotatey = MatrixTransform.yRotation(degToRad(config_object.rotate_y));
-        rotatez = MatrixTransform.zRotation(degToRad(config_object.rotate_z));
-        scale = MatrixTransform.scaling(config_object.scale_x, config_object.scale_y, config_object.scale_z);
-        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale);
+        objectToLoad.configObject();
 
         camera.setLookAt(objectToLoad.configCenter());
         camera.setProjectionLookAt(projection);
 
-        cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewProjectionLookAt;
-
-        objectToLoad.setProjection(cameraObject);
+        objectToLoad.setProjection(camera.getViewMode());
 
         SP.draw(objectToLoad);
 
@@ -77,15 +50,14 @@ function main() {
                 requestAnimationFrame(render);
             break;
             case 1:
-                animationObjectParam = Object.assign({}, config_object);
+                then = 0;
+                animationParam = degToRad(objectToLoad.param.rotate_y);
                 requestAnimationFrame(animation1);
             break;
             case 2:
-                animationObjectParam = Object.assign({}, config_object);
                 requestAnimationFrame(animation2);
             break;
             case 3:
-                animationObjectParam = Object.assign({}, config_object);
                 requestAnimationFrame(animation3);
             break;
             default:
@@ -99,10 +71,9 @@ function main() {
         deltaTime = now - then;
         then = now;
 
-        animationObjectParam.rotate_y += rotationSpeed * deltaTime;
+        animationParam += rotationSpeed * deltaTime;
 
-        rotatey = MatrixTransform.yRotation(animationObjectParam.rotate_y);
-        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+        objectToLoad.rotatey = MatrixTransform.yRotation(animationParam);
 
         SP.draw(objectToLoad);
 
@@ -128,6 +99,7 @@ function main() {
     }
 
     function animation2(now) {
+        then = now;
 
 
         animationMode = config.animation;
@@ -137,6 +109,7 @@ function main() {
                 requestAnimationFrame(render);
             break;
             case 1:
+                then = 0;
                 requestAnimationFrame(animation1);
             break;
             case 2:
@@ -152,6 +125,7 @@ function main() {
     }
 
     function animation3(now) {
+        then = now;
 
 
         animationMode = config.animation;
@@ -161,6 +135,7 @@ function main() {
                 requestAnimationFrame(render);
             break;
             case 1:
+                then = 0;
                 requestAnimationFrame(animation1);
             break;
             case 2:
