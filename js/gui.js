@@ -2,7 +2,10 @@ var config = {
     FOV: 60,
     zNear: 1,
     zFar: 2000,
-    animation: 0
+    animation: 0,
+    camera: 0,
+    newObject: 0,
+    newCamera: 0,
 };
 
 var config_object = {
@@ -28,40 +31,20 @@ var config_camera = {
 }
 
 var gui = null;
-var objCount = 1;
-var cameraCount = 1;
+var objCount = 0;
+var cameraCount = 0;
 
 const loadGUI = () => {
     gui = new dat.GUI();
     gui.add(config, "FOV", -200, 200, 1);
     gui.add(config, "zNear", 1, 2000, 1);
     gui.add(config, "zFar", 1, 2000, 1);
-
-    const guiMesh = gui.addFolder("Mesh 1");
-    guiMesh.add(config_object, "move_x", -400, 400, 1);
-    guiMesh.add(config_object, "move_y", -400, 400, 1);
-    guiMesh.add(config_object, "move_z", -400, 400, 1);
-    guiMesh.add(config_object, "rotate_x", -360, 360, 1);
-    guiMesh.add(config_object, "rotate_y", -360, 271, 1);
-    guiMesh.add(config_object, "rotate_z", -360, 360, 1);
-    guiMesh.add(config_object, "scale_x", -3, 3, 0.1);
-    guiMesh.add(config_object, "scale_y", -3, 3, 0.1);
-    guiMesh.add(config_object, "scale_z", -3, 3, 0.1);
-
-    const guiCamera = gui.addFolder("Camera");
-    guiCamera.add(config_camera, "move_x", -400, 400, 1);
-    guiCamera.add(config_camera, "move_y", -400, 400, 1);
-    guiCamera.add(config_camera, "move_z", -400, 400, 1);
-    guiCamera.add(config_camera, "rotate_x", -360, 360, 1);
-    guiCamera.add(config_camera, "rotate_y", -360, 360, 1);
-    guiCamera.add(config_camera, "rotate_z", -360, 360, 1);
-    guiCamera.add(config_camera, "lookAt", 0, 1, 1);
-
+    gui.add(config, "camera", 0, 2, 1);
+    gui.add(config, "newObject", 0, 1, 1);
+    gui.add(config, "newCamera", 0, 1, 1);
     gui.add(config, "animation", 0, 3, 1);
 
     gui.open();
-    guiMesh.open();
-    guiCamera.open();
 };
 
 const setNewObjectGUI = (param) => {
@@ -80,7 +63,7 @@ const setNewObjectGUI = (param) => {
 };
 
 const setNewCameraGUI = (param) => {
-    objCount++;
+    cameraCount++;
     let guiNew = gui.addFolder(`Camera ${cameraCount}`);
     guiNew.add(param, "move_x", -400, 400, 1);
     guiNew.add(param, "move_y", -400, 400, 1);

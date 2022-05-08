@@ -1,8 +1,10 @@
 class ObjectModel
 {
-    constructor()
+    constructor(param)
     {
-        this.param = null;
+        this.param = param;
+        this.gui = setNewObjectGUI(param);
+        //For mesh
         this.dim = 3;
         this.object = null;
         this.center = null;
@@ -17,9 +19,8 @@ class ObjectModel
         this.texture = null;
     }
 
-    loadMesh(object, param, dim = 3)
+    loadMesh(object, dim = 3)
     {
-        this.param = param;
         this.object = object.slice();
         this.dim = dim;
         this.center = this.objectCenter();

@@ -1,8 +1,9 @@
 class Camera
 {
-    constructor()
+    constructor(param)
     {
-        this.param = null;
+        this.param = param;
+        this.gui = setNewCameraGUI(param);
         this.matrix = null;
         this.lookAt = null;
         this.matrixView = null;
@@ -14,11 +15,6 @@ class Camera
         this.cameraRotatey = null;
         this.cameraRotatez = null;
         this.cameraTranslate = null;
-    }
-
-    loadCamera(param)
-    {
-        this.param = param;
     }
 
     configCamera()
