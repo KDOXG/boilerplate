@@ -38,9 +38,8 @@ function main() {
 
     //Main render loop
 
-    function render(now) {
+    function render() {
 
-        //debugger;
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
 
         cameraTranslate = MatrixTransform.translation(config_camera.move_x, config_camera.move_y, config_camera.move_z);
@@ -49,22 +48,25 @@ function main() {
         cameraRotatez = MatrixTransform.zRotation(degToRad(config_camera.rotate_z));
         camera.configCamera(cameraTranslate, cameraRotatex, cameraRotatey, cameraRotatez);
 
+        camera.setCamera();
         camera.setProjectionMatrix(projection);
 
         objectToLoad.loadMesh(LetterF_3D);
         objectToLoad.loadTexture(color_LetterF_3D);
+        
         translate = MatrixTransform.translation(config_object.move_x, config_object.move_y, config_object.move_z);
         rotatex = MatrixTransform.xRotation(degToRad(config_object.rotate_x));
         rotatey = MatrixTransform.yRotation(degToRad(config_object.rotate_y));
         rotatez = MatrixTransform.zRotation(degToRad(config_object.rotate_z));
         scale = MatrixTransform.scaling(config_object.scale_x, config_object.scale_y, config_object.scale_z);
+        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale);
 
-        objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, camera.viewProjectionMatrix);
+        camera.setLookAt(objectToLoad.configCenter());
+        camera.setProjectionLookAt(projection);
 
-        //camera.setLookAt(objectToLoad.configCenter());
-        cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewLookAt;
+        cameraObject = config_camera.lookAt == 0 ? camera.viewProjectionMatrix : camera.viewProjectionLookAt;
 
-        //objectToLoad.configObject(translate, rotatex, rotatey, rotatez, scale, cameraObject);
+        objectToLoad.setProjection(cameraObject);
 
         SP.draw(objectToLoad);
 
@@ -125,7 +127,7 @@ function main() {
         }
     }
 
-    function animation2() {
+    function animation2(now) {
 
 
         animationMode = config.animation;
@@ -149,7 +151,7 @@ function main() {
         }
     }
 
-    function animation3() {
+    function animation3(now) {
 
 
         animationMode = config.animation;

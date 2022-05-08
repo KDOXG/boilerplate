@@ -31,13 +31,17 @@ class ObjectModel
         this.texture = texture.slice();
     }
 
-    configObject(translate, rotatex, rotatey, rotatez, scale, projection)
+    configObject(translate, rotatex, rotatey, rotatez, scale)
     {
         this.translate = translate;
         this.rotatex = rotatex;
         this.rotatey = rotatey;
         this.rotatez = rotatez;
         this.scale = scale;
+    }
+
+    setProjection(projection)
+    {
         this.projection = projection;
     }
 

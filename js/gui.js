@@ -56,5 +56,6 @@ const loadGUI = () => {
     gui.add(config, "animation", 0, 3, 1);
 
     gui.open();
+    guiMesh.open();
     guiCamera.open();
 };
