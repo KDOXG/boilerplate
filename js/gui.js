@@ -42,7 +42,7 @@ const loadGUI = () => {
     gui.add(config, "camera", 0, 2, 1);
     gui.add(config, "newObject", 0, 1, 1);
     gui.add(config, "newCamera", 0, 1, 1);
-    gui.add(config, "animation", 0, 3, 1);
+    gui.add(config, "animation", 0, 2, 1);
 
     gui.open();
 };

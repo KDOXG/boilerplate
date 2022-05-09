@@ -13,18 +13,77 @@ function main() {
     let cameras = [new Camera({...config_camera})];
 
     //Animation
-    let animationParam = 0;
+    let animationParam = 
+    {
+        xRotation: 0,
+        yRotation: 0,
+        xMove: 0,
+        yMove: 0,
+        zMove: 0,
+    };
+    function animationParamInit(param = null)
+    {
+        if (param == null)
+            return {
+                xRotation: 0,
+                yRotation: 0,
+                xMove: 0,
+                yMove: 0,
+                zMove: -360,
+            };
+        return {
+            xRotation: 0,
+            yRotation: 0,
+            xMove: param.move_x,
+            yMove: param.move_y,
+            zMove: param.move_z
+        };
+    }
     let animationMode = config.animation;
     let then = 0;
     let deltaTime = 0;
-    let rotationSpeed = 1.2;
+    let animationSpeed = 1.2;
 
     //Projection matrix
     let projection = null;
 
-    //States
-    let state_newObj = 0;
-    let state_newCamera = 0;
+    //Flags
+    let flagObj = 
+    {
+        flagNewObj: 0,
+        flagNewCamera: 0,
+        Anim2Step: 0,
+        Anim2Counter: 0,
+        init: () => {
+            this.flagNewObj = 0;
+            this.flagNewCamera = 0;
+            this.Anim2Step = 0;
+            this.Anim2Counter = 0;
+        },
+    };
+
+    function useCamera()
+    {
+        if (config.newCamera == 1 && flagObj.flagNewCamera == 0)
+        {
+            cameras.push(new Camera({...config_camera}));
+            flagObj.flagNewCamera = 1;
+        }
+        if (config.newCamera == 0)
+            flagObj.flagNewCamera = 0;
+        return config.camera >= 0 && config.camera < cameras.length ? cameras[config.camera] : cameras[0];
+    };
+
+    function checkNewObject()
+    {
+        if (config.newObject == 1 && flagObj.flagNewObj == 0)
+        {
+            objectsToLoad.push(new ObjectModel({...config_object}));
+            flagObj.flagNewObj = 1;
+        }
+        if (config.newObject == 0)
+            flagObj.flagNewObj = 0;
+    }
 
     SP.initSystem();
 
@@ -34,30 +93,14 @@ function main() {
         then = now;
 
         projection = MatrixTransform.perspective(degToRad(config.FOV), SP.getCanvasSize()[0] / SP.getCanvasSize()[1], config.zNear, config.zFar);
-        if (config.newCamera == 1 && state_newCamera == 0)
-        {
-            cameras.push(new Camera({...config_camera}));
-            state_newCamera = 1;
-        }
-        if (config.newCamera == 0)
-            state_newCamera = 0;
-        
-        camera = config.camera >= 0 && config.camera < cameras.length ? cameras[config.camera] : cameras[0];
 
+        camera = useCamera();
         camera.configCamera();
         camera.setCamera();
 
         camera.setProjectionMatrix(projection);
 
-        if (config.newObject == 1 && state_newObj == 0)
-        {
-            objectsToLoad.push(new ObjectModel({...config_object}));
-            state_newObj = 1;
-        }
-        if (config.newObject == 0)
-            state_newObj = 0;
-        
-
+        checkNewObject();
         objectsToLoad.forEach((objectToLoad) => {
 
             objectToLoad.loadMesh(LetterF_3D);
@@ -80,15 +123,13 @@ function main() {
                 requestAnimationFrame(render);
             break;
             case 1:
-                then = 0;
-                animationParam = degToRad(objectsToLoad[0].param.rotate_y);
+                animationParam = animationParamInit();
+                animationParam.yRotation = degToRad(objectsToLoad[0].param.rotate_y);
                 requestAnimationFrame(animation1);
             break;
             case 2:
+                animationParam = animationParamInit();
                 requestAnimationFrame(animation2);
-            break;
-            case 3:
-                requestAnimationFrame(animation3);
             break;
             default:
                 requestAnimationFrame(render);
@@ -101,12 +142,12 @@ function main() {
         deltaTime = now - then;
         then = now;
 
-        animationParam += rotationSpeed * deltaTime;
+        animationParam.yRotation += animationSpeed * deltaTime;
 
         objectsToLoad.forEach((objectToLoad) => {
 
-        objectToLoad.rotatey = MatrixTransform.yRotation(animationParam);
-        SP.draw(objectToLoad);
+            objectToLoad.rotatey = MatrixTransform.yRotation(animationParam.yRotation);
+            SP.draw(objectToLoad);
         
         });
 
@@ -120,10 +161,8 @@ function main() {
                 requestAnimationFrame(animation1);
             break;
             case 2:
+                animationParam = animationParamInit();
                 requestAnimationFrame(animation2);
-            break;
-            case 3:
-                requestAnimationFrame(animation3);
             break;
             default:
                 requestAnimationFrame(render);
@@ -132,34 +171,124 @@ function main() {
     }
 
     function animation2(now) {
+        now *= 0.001;
+        deltaTime = now - then;
         then = now;
 
-
-        animationMode = config.animation;
-        switch(animationMode)
+        switch(flagObj.Anim2Step)
         {
             case 0:
-                requestAnimationFrame(render);
+
+                animationParam.yMove += animationSpeed * deltaTime * 50;
+                flagObj.Anim2Counter++;
+
+                objectsToLoad.forEach((objectToLoad) => {
+        
+                    objectToLoad.translate = MatrixTransform.translation(animationParam.xMove, animationParam.yMove, animationParam.zMove);
+
+                    SP.draw(objectToLoad);
+                
+                });
+
+                if (flagObj.Anim2Counter == 100)
+                {
+                    flagObj.Anim2Step = 1;
+                }
+
             break;
             case 1:
-                then = 0;
-                requestAnimationFrame(animation1);
+
+                animationParam.xRotation += animationSpeed * deltaTime;
+                flagObj.Anim2Counter++;
+
+                objectsToLoad.forEach((objectToLoad) => {
+        
+                    objectToLoad.rotatex = MatrixTransform.xRotation(animationParam.xRotation);
+
+                    SP.draw(objectToLoad);
+                
+                });
+
+                if (flagObj.Anim2Counter == 200)
+                {
+                    flagObj.Anim2Step = 2;
+                }
+                if (flagObj.Anim2Counter == 400)
+                {
+                    flagObj.Anim2Step = 3;
+                }
+                if (flagObj.Anim2Counter == 600)
+                {
+                    flagObj.Anim2Step = 4;
+                }
+                if (flagObj.Anim2Counter == 800)
+                {
+                    flagObj.Anim2Step = 0;
+                    flagObj.Anim2Counter = 0;
+                }
+
             break;
             case 2:
-                requestAnimationFrame(animation2);
+
+                animationParam.xMove += animationSpeed * deltaTime * 50;
+                flagObj.Anim2Counter++;
+
+                objectsToLoad.forEach((objectToLoad) => {
+        
+                    objectToLoad.translate = MatrixTransform.translation(animationParam.xMove, animationParam.yMove, animationParam.zMove);
+
+                    SP.draw(objectToLoad);
+                
+                });
+
+                if (flagObj.Anim2Counter == 300)
+                {
+                    flagObj.Anim2Step = 1;
+                }
+
             break;
             case 3:
-                requestAnimationFrame(animation3);
+
+                animationParam.yMove -= animationSpeed * deltaTime * 50;
+                flagObj.Anim2Counter++;
+
+                objectsToLoad.forEach((objectToLoad) => {
+        
+                    objectToLoad.translate = MatrixTransform.translation(animationParam.xMove, animationParam.yMove, animationParam.zMove);
+
+                    SP.draw(objectToLoad);
+                
+                });
+
+                if (flagObj.Anim2Counter == 500)
+                {
+                    flagObj.Anim2Step = 1;
+                }
+
+            break;
+            case 4:
+
+                animationParam.xMove -= animationSpeed * deltaTime * 50;
+                flagObj.Anim2Counter++;
+
+                objectsToLoad.forEach((objectToLoad) => {
+        
+                    objectToLoad.translate = MatrixTransform.translation(animationParam.xMove, animationParam.yMove, animationParam.zMove);
+
+                    SP.draw(objectToLoad);
+                
+                });
+
+                if (flagObj.Anim2Counter == 700)
+                {
+                    flagObj.Anim2Step = 1;
+                }
+
             break;
             default:
-                requestAnimationFrame(render);
+
             break;
         }
-    }
-
-    function animation3(now) {
-        then = now;
-
 
         animationMode = config.animation;
         switch(animationMode)
@@ -168,14 +297,12 @@ function main() {
                 requestAnimationFrame(render);
             break;
             case 1:
-                then = 0;
+                animationParam = animationParamInit();
+                animationParam.yRotation = degToRad(objectsToLoad[0].param.rotate_y);
                 requestAnimationFrame(animation1);
             break;
             case 2:
                 requestAnimationFrame(animation2);
-            break;
-            case 3:
-                requestAnimationFrame(animation3);
             break;
             default:
                 requestAnimationFrame(render);
@@ -194,9 +321,6 @@ function main() {
         break;
         case 2:
             requestAnimationFrame(animation2);
-        break;
-        case 3:
-            requestAnimationFrame(animation3);
         break;
         default:
             requestAnimationFrame(render);
