@@ -1,7 +1,3 @@
-const COLOR_RED = 0;
-const COLOR_GREEN = 1;
-const COLOR_BLUE = 2;
-
 var downTriangle =
     [
         0.7, 0.7,
